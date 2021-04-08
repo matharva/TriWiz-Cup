@@ -7,14 +7,16 @@
 }
 
 .node-finish {
-  background-color: red;
+  /* background-color: red; */
   outline: none;
+  content: url("../images/cup.png");
   /* content: url(harry.png); */
 }
 
 .node-start {
-  background-color: green;
+  /* background-color: green; */
   outline: none;
+  content: url("../images/harry.png");
 }
 
 .node-visited {

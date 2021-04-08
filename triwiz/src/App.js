@@ -1,12 +1,13 @@
 import "./styles/App.css";
 import Pathfinder from "./Pathfinder";
-
+import { AuthProvider } from "./contexts/AuthContext";
 function App() {
   return (
-    <div className="App">
-      <h1>Hi from triwiz</h1>
-      <Pathfinder />
-    </div>
+    <AuthProvider>
+      <div className="App">
+        <Pathfinder />
+      </div>
+    </AuthProvider>
   );
 }
 
