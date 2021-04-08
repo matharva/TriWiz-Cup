@@ -269,7 +269,9 @@ const Pathfinder = () => {
             Visualize Dijkstra's Algorithm
           </button>
           <button onClick={() => visualizeMaze()}>Maze</button>
-          <Countdown />
+          {/* CountDown Button */}
+          {/* <Countdown /> */}
+          {/* CountDown Button */}
         </div>
       </div>
       <div className="grid">
