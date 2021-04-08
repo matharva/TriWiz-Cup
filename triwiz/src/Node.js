@@ -1,5 +1,5 @@
 import React from "react";
-import "./Node.css";
+import "./styles/Node.css";
 const Node = (props) => {
   const { row, col, isHarry, isCup, isWall } = props;
 
