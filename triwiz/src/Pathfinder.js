@@ -7,6 +7,7 @@ import {
   getAllNodes,
 } from "./algorithms/dijkstra";
 import { recursiveDivisionMaze, wallsToAnimate } from "./maze/maze";
+import Countdown from "./Countdown";
 
 // Position of the cup and harry
 
@@ -268,6 +269,7 @@ const Pathfinder = () => {
             Visualize Dijkstra's Algorithm
           </button>
           <button onClick={() => visualizeMaze()}>Maze</button>
+          <Countdown />
         </div>
       </div>
       <div className="grid">
