@@ -33,7 +33,7 @@ const Countdown = () => {
         isPlaying
         size={55}
         strokeWidth={6}
-        duration={10}
+        duration={100}
         colors={[["#004777", 0.33], ["#F7B801", 0.33], ["#A30000"]]}
         onComplete={() => [false, 200]}
       >

@@ -90,7 +90,7 @@ const Pathfinder = () => {
 
   const initializeGrid = () => {
     const grid = [];
-    for (let row = 0; row < 20; row++) {
+    for (let row = 0; row < 50; row++) {
       const currentRow = [];
       for (let col = 0; col < 50; col++) {
         //   console.log("In inner for loo[");
@@ -177,7 +177,8 @@ const Pathfinder = () => {
     recursiveDivisionMaze(
       allNodes,
       2,
-      height - 3,
+      // height - 3,
+      47,
       2,
       width - 3,
       "horizontal",
@@ -186,6 +187,19 @@ const Pathfinder = () => {
       startNode,
       finishNode
     );
+      var half = wallsToAnimate.length/25;
+      for(let i=0;i<half;i++)
+
+      {
+        let randomIndex = Math.floor(Math.random() * wallsToAnimate.length);
+        if ((wallsToAnimate[randomIndex].row===0 || wallsToAnimate[randomIndex].row===19) || (wallsToAnimate[randomIndex].col===0 || wallsToAnimate[randomIndex].col===49))
+        {
+          i--;
+          continue;
+        }
+        wallsToAnimate.splice(randomIndex,1)
+      }
+
     console.log(wallsToAnimate);
     animateWalls(wallsToAnimate);
     // setRandomMaze(wallsToAnimate);

@@ -7,7 +7,7 @@ export function useAuth() {
 }
 
 export function AuthProvider({ children }) {
-  const FINISH_NODE_ROW = 18;
+  const FINISH_NODE_ROW = 48;
   const FINISH_NODE_COL = 48;
 
   const [snodeRow, setSnodeRow] = useState(1);
