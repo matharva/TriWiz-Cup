@@ -28,19 +28,36 @@ const Pathfinder = () => {
     setSnodeCol,
   } = useAuth();
   const [grid, setGrid] = useState([]);
+  const [flag, setFlag] = useState(true);
+
+  // setInterval(function () {
+  //   setFlag(true);
+  //   console.log(`Flag is ${flag}`);
+  // }, 20000);
 
   // console.log(grid);
   //   First things that runs after the page is rendered
+
+  // function callAfter() {
+  //   // setTimeout(() => setFlag(true), 10000);
+  //   console.log("flag set as true");
+  //   setFlag(true);
+  // }
+  // const [flag, setFlag] = useState(true);
+  const [seconds, setSeconds] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSeconds((seconds) => seconds + 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   useEffect(() => {
     const maze = initializeGrid();
-    // console.log(wallsToAnimate);
-    // console.log("Maze is: ");
+
     maze.forEach((node) => {
       node.map((innerNode) => {
-        // console.log(
-        //   wallsToAnimate.some((item) => item.row === innerNode.row) &&
-        //     wallsToAnimate.some((item) => item.col === innerNode.col)
-        // );
         if (
           wallsToAnimate.some(
             (item) => item.col === innerNode.col && item.row === innerNode.row
@@ -48,15 +65,32 @@ const Pathfinder = () => {
         ) {
           innerNode.isWall = true;
         }
-
-        // if (
-        //   grid[START_NODE_ROW][START_NODE_COL].className === "node node-start"
-        // ) {
-        //   console.log("start node is: ");
-        //   console.log(innerNode);
-        // }
       });
     });
+    // setGrid(maze);
+
+    // For random changing mazes
+
+    if (seconds % 5 === 0 && seconds != 0) {
+      const startNode = maze[START_NODE_ROW][START_NODE_COL];
+      const finishNode = maze[FINISH_NODE_ROW][FINISH_NODE_COL];
+      const vnio = dijkstra(maze, startNode, finishNode);
+      const nispo = getNodesInShortestPathOrder(finishNode);
+
+      maze[nispo[1].row][nispo[1].col].isWall = true;
+      console.log(maze[nispo[1].row][nispo[1].col]);
+      const vnio1 = dijkstra(maze, startNode, finishNode);
+      const nispo1 = getNodesInShortestPathOrder(finishNode);
+      console.log("Outside if condition");
+      if (
+        (nispo1.length > 1 && nispo1[nispo1.length - 1] !== finishNode) ||
+        nispo1.length <= 1
+      ) {
+        console.log("In if condition");
+        maze[nispo[1].row][nispo[1].col].isWall = false;
+      }
+    }
+
     setGrid(maze);
     console.log(grid);
     console.log(`Harry is at ${START_NODE_ROW} ${START_NODE_COL}`);
@@ -113,6 +147,33 @@ const Pathfinder = () => {
           // console.log(i, visitedNodesInOrder.length);
           // console.log("now starting shortest path");
           animateShortestPath(nodesInShortestPathOrder);
+          // for (let i = 0; i <= visitedNodesInOrder.length; i++) {
+          //   // if (i === visitedNodesInOrder.length) {
+          //   //   setTimeout(() => {
+          //   //     // console.log(i, visitedNodesInOrder.length);
+          //   //     // console.log("now starting shortest path");
+          //   //     animateShortestPath(nodesInShortestPathOrder);
+          //   //   }, 15 * i);
+          //   //   return;
+          //   // }
+          //   setTimeout(() => {
+          //     const node = visitedNodesInOrder[i];
+          //     // console.log(node);
+          //     if (node.isHarry) {
+          //       document.getElementById(
+          //         `node-${node.row}-${node.col}`
+          //       ).className = "node node-start";
+          //     } else if (node.isCup) {
+          //       document.getElementById(
+          //         `node-${node.row}-${node.col}`
+          //       ).className = "node node-finish ";
+          //     } else if (node.isVisited) {
+          //       document.getElementById(
+          //         `node-${node.row}-${node.col}`
+          //       ).className = "node ";
+          //     }
+          //   }, 15 * i);
+          // }
         }, 15 * i);
         return;
       }
@@ -147,7 +208,7 @@ const Pathfinder = () => {
           document.getElementById(`node-${node.row}-${node.col}`).className =
             "node node-shortest-path";
         }
-      }, 50 * i);
+      }, 15 * i);
     }
   }
 
@@ -187,18 +248,20 @@ const Pathfinder = () => {
       startNode,
       finishNode
     );
-      var half = wallsToAnimate.length/25;
-      for(let i=0;i<half;i++)
-
-      {
-        let randomIndex = Math.floor(Math.random() * wallsToAnimate.length);
-        if ((wallsToAnimate[randomIndex].row===0 || wallsToAnimate[randomIndex].row===19) || (wallsToAnimate[randomIndex].col===0 || wallsToAnimate[randomIndex].col===49))
-        {
-          i--;
-          continue;
-        }
-        wallsToAnimate.splice(randomIndex,1)
+    var half = wallsToAnimate.length / 25;
+    for (let i = 0; i < half; i++) {
+      let randomIndex = Math.floor(Math.random() * wallsToAnimate.length);
+      if (
+        wallsToAnimate[randomIndex].row === 0 ||
+        wallsToAnimate[randomIndex].row === 49 ||
+        wallsToAnimate[randomIndex].col === 0 ||
+        wallsToAnimate[randomIndex].col === 49
+      ) {
+        i--;
+        continue;
       }
+      wallsToAnimate.splice(randomIndex, 1);
+    }
 
     console.log(wallsToAnimate);
     animateWalls(wallsToAnimate);
@@ -284,7 +347,7 @@ const Pathfinder = () => {
           </button>
           <button onClick={() => visualizeMaze()}>Maze</button>
           {/* CountDown Button */}
-          {/* <Countdown /> */}
+          <Countdown />
           {/* CountDown Button */}
         </div>
       </div>
