@@ -31,7 +31,7 @@ export function recursiveDivisionMaze(
         let r = node.row;
         let c = node.col;
 
-        if (r === 0 || c === 0 || r ===  49 || c === width - 1) {
+        if (r === 0 || c === 0 || r === 49 || c === width - 1) {
           // let currentHTMLNode = document.getElementById(node); height - 1
           wallsToAnimate.push(node);
           if (type === "wall") {
@@ -261,5 +261,3 @@ export function recursiveDivisionMaze(
   }
   // console.log(wallsToAnimate);
 }
-export { wallsToAnimate };
-export default recursiveDivisionMaze;

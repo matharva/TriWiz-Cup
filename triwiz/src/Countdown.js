@@ -33,15 +33,25 @@ const Countdown = () => {
         isPlaying
         size={55}
         strokeWidth={6}
-        duration={100}
+        duration={90}
         colors={[["#004777", 0.33], ["#F7B801", 0.33], ["#A30000"]]}
         onComplete={() => [false, 200]}
       >
         {renderTime}
       </CountdownCircleTimer>
       <Modal isOpen={showModal}>
-        <h1>Time is up</h1>
-        <button onClick={refreshPage}>Click to reload!</button>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexDirection: "column",
+            height: "60vh",
+          }}
+        >
+          <h1>Time is up</h1>
+          <button onClick={refreshPage}>Click to reload!</button>
+        </div>
       </Modal>
     </div>
   );

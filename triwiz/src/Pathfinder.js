@@ -6,7 +6,13 @@ import {
   getNodesInShortestPathOrder,
   getAllNodes,
 } from "./algorithms/dijkstra";
-import { recursiveDivisionMaze, wallsToAnimate } from "./maze/maze";
+import { BFS, getNodesInShortestPathOrderBFS } from "./algorithms/bfs";
+import {
+  DFS,
+  DFS_controller,
+  getNodesInShortestPathOrderDFS,
+} from "./algorithms/dfs";
+// import { recursiveDivisionMaze, wallsToAnimate } from "./maze/maze";
 import Countdown from "./Countdown";
 
 // Position of the cup and harry
@@ -17,6 +23,7 @@ import Countdown from "./Countdown";
 // const FINISH_NODE_COL = 35;
 const height = 20;
 const width = 50;
+var wallsToAnimate = [];
 
 const Pathfinder = () => {
   const {
@@ -28,31 +35,274 @@ const Pathfinder = () => {
     setSnodeCol,
   } = useAuth();
   const [grid, setGrid] = useState([]);
-  const [flag, setFlag] = useState(true);
+  const [endGame, setEndGame] = useState(false);
 
-  // setInterval(function () {
-  //   setFlag(true);
-  //   console.log(`Flag is ${flag}`);
-  // }, 20000);
+  const [seconds, setSeconds] = useState(1);
 
-  // console.log(grid);
-  //   First things that runs after the page is rendered
+  function recursiveDivisionMaze(
+    board,
+    rowStart,
+    rowEnd,
+    colStart,
+    colEnd,
+    orientation,
+    surroundingWalls,
+    type,
+    startNode,
+    finishNode
+  ) {
+    if (rowEnd < rowStart || colEnd < colStart) {
+      return;
+    }
+    if (!surroundingWalls) {
+      let relevantIds = [startNode, finishNode];
+      // if (board.object) relevantIds.push(board.object);
+      // Object.keys(board.nodes).forEach((node) => {
+      board.forEach((node) => {
+        if (!relevantIds.includes(node)) {
+          // console.log(node.row, node.col);
+          let r = node.row;
+          let c = node.col;
 
-  // function callAfter() {
-  //   // setTimeout(() => setFlag(true), 10000);
-  //   console.log("flag set as true");
-  //   setFlag(true);
-  // }
-  // const [flag, setFlag] = useState(true);
-  const [seconds, setSeconds] = useState(0);
+          if (r === 0 || c === 0 || r === 49 || c === width - 1) {
+            // let currentHTMLNode = document.getElementById(node); height - 1
+            wallsToAnimate.push(node);
+            if (type === "wall") {
+              node.isWall = true;
+              // board.nodes[node].weight = 0;
+            }
+            // else if (type === "weight") {
+            //   board.nodes[node].status = "unvisited";
+            //   board.nodes[node].weight = 15;
+            // }
+          }
+          // console.log("Walls are done");
+        }
+      });
+      // console.log(wallsToAnimate);
+      surroundingWalls = true;
+    }
+    if (orientation === "horizontal") {
+      // console.log("In horizontal if");
+      let possibleRows = [];
+      for (let number = rowStart; number <= rowEnd; number += 2) {
+        possibleRows.push(number);
+      }
+      let possibleCols = [];
+      for (let number = colStart - 1; number <= colEnd + 1; number += 2) {
+        possibleCols.push(number);
+      }
+      let randomRowIndex = Math.floor(Math.random() * possibleRows.length);
+      let randomColIndex = Math.floor(Math.random() * possibleCols.length);
+      let currentRow = possibleRows[randomRowIndex];
+      let colRandom = possibleCols[randomColIndex];
+      board.forEach((node) => {
+        // let r = parseInt(node.split("-")[0]);
+        // let c = parseInt(node.split("-")[1]);
+        let r = node.row;
+        let c = node.col;
+        if (
+          r === currentRow &&
+          c !== colRandom &&
+          c >= colStart - 1 &&
+          c <= colEnd + 1
+        ) {
+          // let currentHTMLNode = document.getElementById(node);
+          // if (
+          //   currentHTMLNode.className !== "start" &&
+          //   currentHTMLNode.className !== "target" &&
+          //   currentHTMLNode.className !== "object"
+          // ) {
+          if (
+            node.isHarry === false &&
+            node.isCup === false &&
+            node.isWall === false
+          ) {
+            wallsToAnimate.push(node);
+            if (type === "wall") {
+              node.isWall = true;
+              // board.nodes[node].weight = 0;
+            }
+            //else if (type === "weight") {
+            //   board.nodes[node].status = "unvisited";
+            //   board.nodes[node].weight = 15;
+            // }
+          }
+        }
+      });
+      if (currentRow - 2 - rowStart > colEnd - colStart) {
+        recursiveDivisionMaze(
+          board,
+          rowStart,
+          currentRow - 2,
+          colStart,
+          colEnd,
+          orientation,
+          surroundingWalls,
+          type,
+          startNode,
+          finishNode
+        );
+      } else {
+        recursiveDivisionMaze(
+          board,
+          rowStart,
+          currentRow - 2,
+          colStart,
+          colEnd,
+          "vertical",
+          surroundingWalls,
+          type,
+          startNode,
+          finishNode
+        );
+      }
+      if (rowEnd - (currentRow + 2) > colEnd - colStart) {
+        recursiveDivisionMaze(
+          board,
+          currentRow + 2,
+          rowEnd,
+          colStart,
+          colEnd,
+          orientation,
+          surroundingWalls,
+          type,
+          startNode,
+          finishNode
+        );
+      } else {
+        recursiveDivisionMaze(
+          board,
+          currentRow + 2,
+          rowEnd,
+          colStart,
+          colEnd,
+          "vertical",
+          surroundingWalls,
+          type,
+          startNode,
+          finishNode
+        );
+      }
+    }
+
+    // ELSE STARTS HERE
+    else {
+      // console.log("In else");
+      let possibleCols = [];
+      for (let number = colStart; number <= colEnd; number += 2) {
+        possibleCols.push(number);
+      }
+      let possibleRows = [];
+      for (let number = rowStart - 1; number <= rowEnd + 1; number += 2) {
+        possibleRows.push(number);
+      }
+      let randomColIndex = Math.floor(Math.random() * possibleCols.length);
+      let randomRowIndex = Math.floor(Math.random() * possibleRows.length);
+      let currentCol = possibleCols[randomColIndex];
+      let rowRandom = possibleRows[randomRowIndex];
+      board.forEach((node) => {
+        // let r = parseInt(node.split("-")[0]);
+        // let c = parseInt(node.split("-")[1]);
+        let r = node.row;
+        let c = node.col;
+        if (
+          c === currentCol &&
+          r !== rowRandom &&
+          r >= rowStart - 1 &&
+          r <= rowEnd + 1
+        ) {
+          // let currentHTMLNode = document.getElementById(node);
+          // if (
+          //   currentHTMLNode.className !== "start" &&
+          //   currentHTMLNode.className !== "target" &&
+          //   currentHTMLNode.className !== "object"
+          // ) {
+          // console.log(node);
+          if (
+            node.isHarry === false &&
+            node.isCup === false &&
+            node.isWall === false
+          ) {
+            wallsToAnimate.push(node);
+            // console.log("Wall added");
+            // console.log(node);
+            if (type === "wall") {
+              node.isWall = true;
+            }
+            // else if (type === "weight") {
+            //   board.nodes[node].status = "unvisited";
+            //   board.nodes[node].weight = 15;
+            // }
+          }
+        }
+      });
+      if (rowEnd - rowStart > currentCol - 2 - colStart) {
+        recursiveDivisionMaze(
+          board,
+          rowStart,
+          rowEnd,
+          colStart,
+          currentCol - 2,
+          "horizontal",
+          surroundingWalls,
+          type,
+          startNode,
+          finishNode
+        );
+      } else {
+        recursiveDivisionMaze(
+          board,
+          rowStart,
+          rowEnd,
+          colStart,
+          currentCol - 2,
+          orientation,
+          surroundingWalls,
+          type,
+          startNode,
+          finishNode
+        );
+      }
+      if (rowEnd - rowStart > colEnd - (currentCol + 2)) {
+        recursiveDivisionMaze(
+          board,
+          rowStart,
+          rowEnd,
+          currentCol + 2,
+          colEnd,
+          "horizontal",
+          surroundingWalls,
+          type,
+          startNode,
+          finishNode
+        );
+      } else {
+        recursiveDivisionMaze(
+          board,
+          rowStart,
+          rowEnd,
+          currentCol + 2,
+          colEnd,
+          orientation,
+          surroundingWalls,
+          type,
+          startNode,
+          finishNode
+        );
+      }
+    }
+    // console.log(wallsToAnimate);
+  }
 
   useEffect(() => {
     const interval = setInterval(() => {
       setSeconds((seconds) => seconds + 1);
     }, 1000);
+
     return () => clearInterval(interval);
   }, []);
-
+  // console.log(seconds);
   useEffect(() => {
     const maze = initializeGrid();
 
@@ -67,31 +317,35 @@ const Pathfinder = () => {
         }
       });
     });
-    // setGrid(maze);
 
     // For random changing mazes
-
-    if (seconds % 5 === 0 && seconds != 0) {
-      const startNode = maze[START_NODE_ROW][START_NODE_COL];
-      const finishNode = maze[FINISH_NODE_ROW][FINISH_NODE_COL];
-      const vnio = dijkstra(maze, startNode, finishNode);
-      const nispo = getNodesInShortestPathOrder(finishNode);
-
-      maze[nispo[1].row][nispo[1].col].isWall = true;
-      console.log(maze[nispo[1].row][nispo[1].col]);
-      const vnio1 = dijkstra(maze, startNode, finishNode);
-      const nispo1 = getNodesInShortestPathOrder(finishNode);
-      console.log("Outside if condition");
-      if (
-        (nispo1.length > 1 && nispo1[nispo1.length - 1] !== finishNode) ||
-        nispo1.length <= 1
-      ) {
-        console.log("In if condition");
-        maze[nispo[1].row][nispo[1].col].isWall = false;
-      }
+    if (seconds % 10 === 0 && seconds > 30) {
+      grid.forEach((node) => {
+        node.map((innerNode) => {
+          innerNode.isWall = false;
+        });
+      });
+      // setGrid(maze);
+      wallsToAnimate.splice(0, wallsToAnimate.length);
+      console.log("Cleared the walls list");
+      console.log(wallsToAnimate);
+      visualizeMaze();
     }
 
     setGrid(maze);
+    try {
+      if (
+        grid[START_NODE_ROW][START_NODE_COL] ===
+        grid[FINISH_NODE_ROW][FINISH_NODE_COL]
+      ) {
+        setEndGame(true);
+      }
+    } catch (error) {
+      console.error(error);
+      // expected output: ReferenceError: nonExistentFunction is not defined
+      // Note - error messages will vary depending on browser
+    }
+
     console.log(grid);
     console.log(`Harry is at ${START_NODE_ROW} ${START_NODE_COL}`);
     try {
@@ -147,34 +401,35 @@ const Pathfinder = () => {
           // console.log(i, visitedNodesInOrder.length);
           // console.log("now starting shortest path");
           animateShortestPath(nodesInShortestPathOrder);
-          // for (let i = 0; i <= visitedNodesInOrder.length; i++) {
-          //   // if (i === visitedNodesInOrder.length) {
-          //   //   setTimeout(() => {
-          //   //     // console.log(i, visitedNodesInOrder.length);
-          //   //     // console.log("now starting shortest path");
-          //   //     animateShortestPath(nodesInShortestPathOrder);
-          //   //   }, 15 * i);
-          //   //   return;
-          //   // }
-          //   setTimeout(() => {
-          //     const node = visitedNodesInOrder[i];
-          //     // console.log(node);
-          //     if (node.isHarry) {
-          //       document.getElementById(
-          //         `node-${node.row}-${node.col}`
-          //       ).className = "node node-start";
-          //     } else if (node.isCup) {
-          //       document.getElementById(
-          //         `node-${node.row}-${node.col}`
-          //       ).className = "node node-finish ";
-          //     } else if (node.isVisited) {
-          //       document.getElementById(
-          //         `node-${node.row}-${node.col}`
-          //       ).className = "node ";
-          //     }
-          //   }, 15 * i);
-          // }
-        }, 15 * i);
+          // For fading walls
+          for (let i = 0; i <= visitedNodesInOrder.length - 1; i++) {
+            // if (i === visitedNodesInOrder.length) {
+            //   setTimeout(() => {
+            //     // console.log(i, visitedNodesInOrder.length);
+            //     // console.log("now starting shortest path");
+            //     animateShortestPath(nodesInShortestPathOrder);
+            //   }, 15 * i);
+            //   return;
+            // }
+            setTimeout(() => {
+              const node = visitedNodesInOrder[i];
+              // console.log(node);
+              if (node.isHarry) {
+                document.getElementById(
+                  `node-${node.row}-${node.col}`
+                ).className = "node node-start";
+              } else if (node.isCup) {
+                document.getElementById(
+                  `node-${node.row}-${node.col}`
+                ).className = "node node-finish ";
+              } else if (node.isVisited) {
+                document.getElementById(
+                  `node-${node.row}-${node.col}`
+                ).className = "node ";
+              }
+            }, 7 * i);
+          }
+        }, 7 * i);
         return;
       }
       setTimeout(() => {
@@ -190,7 +445,7 @@ const Pathfinder = () => {
           document.getElementById(`node-${node.row}-${node.col}`).className =
             "node node-visited";
         }
-      }, 15 * i);
+      }, 7 * i);
     }
   }
 
@@ -208,17 +463,24 @@ const Pathfinder = () => {
           document.getElementById(`node-${node.row}-${node.col}`).className =
             "node node-shortest-path";
         }
-      }, 15 * i);
+      }, 10 * i);
     }
   }
 
   function animateWalls(wallsToAnimate) {
+    // console.log(wallsToAnimate);
     for (let i = 0; i < wallsToAnimate.length; i++) {
       setTimeout(() => {
         const node = wallsToAnimate[i];
-        document.getElementById(`node-${node.row}-${node.col}`).className =
-          "node node-wall";
-      }, 10 * i);
+        try {
+          document.getElementById(`node-${node.row}-${node.col}`).className =
+            "node node-wall";
+        } catch (error) {
+          console.error(error);
+          // expected output: ReferenceError: nonExistentFunction is not defined
+          // Note - error messages will vary depending on browser
+        }
+      }, 1 * i);
     }
   }
 
@@ -230,11 +492,28 @@ const Pathfinder = () => {
     const nodesInShortestPathOrder = getNodesInShortestPathOrder(finishNode);
     animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder);
   }
+  //   For Djikstra
+  function visualizeBFS() {
+    const startNode = grid[START_NODE_ROW][START_NODE_COL];
+    const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
+    const visitedNodesInOrder = BFS(grid, startNode, finishNode);
+    const nodesInShortestPathOrder = getNodesInShortestPathOrderBFS(finishNode);
+    animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder);
+  }
+  function visualizeDFS() {
+    const startNode = grid[START_NODE_ROW][START_NODE_COL];
+    const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
+    const visitedNodesInOrder = DFS_controller(grid, startNode, finishNode);
+    console.log(visitedNodesInOrder);
+    const nodesInShortestPathOrder = getNodesInShortestPathOrderDFS(finishNode);
+    animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder);
+  }
 
   function visualizeMaze() {
     const allNodes = getAllNodes(grid);
     const startNode = grid[START_NODE_ROW][START_NODE_COL];
     const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
+    // console.log(wallsToAnimate);
     recursiveDivisionMaze(
       allNodes,
       2,
@@ -248,7 +527,8 @@ const Pathfinder = () => {
       startNode,
       finishNode
     );
-    var half = wallsToAnimate.length / 25;
+    // console.log(wallsToAnimate);
+    var half = wallsToAnimate.length / 20;
     for (let i = 0; i < half; i++) {
       let randomIndex = Math.floor(Math.random() * wallsToAnimate.length);
       if (
@@ -263,7 +543,7 @@ const Pathfinder = () => {
       wallsToAnimate.splice(randomIndex, 1);
     }
 
-    console.log(wallsToAnimate);
+    // console.log(wallsToAnimate);
     animateWalls(wallsToAnimate);
     // setRandomMaze(wallsToAnimate);
   }
@@ -299,6 +579,10 @@ const Pathfinder = () => {
     }
   }
 
+  function refreshPage() {
+    window.location.reload(false);
+  }
+
   return (
     <>
       {(document.onkeydown = checkKey)}
@@ -328,50 +612,85 @@ const Pathfinder = () => {
           flexDirection: "column",
         }}
       >
-        <h1>Hi from triwiz</h1>
-
+        <h1>TriWizard Cup</h1>
+      </div>
+      {endGame ? (
         <div
-          className=""
           style={{
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            paddingBottom: "1rem",
+            flexDirection: "column",
           }}
         >
-          <button
-            onClick={() => visualizeDijkstra()}
-            style={{ marginRight: "10px" }}
-          >
-            Visualize Dijkstra's Algorithm
-          </button>
-          <button onClick={() => visualizeMaze()}>Maze</button>
-          {/* CountDown Button */}
-          <Countdown />
-          {/* CountDown Button */}
+          <h1>You win</h1>
+          <button onClick={refreshPage}>Click to reload!</button>
         </div>
-      </div>
-      <div className="grid">
-        {grid.map((row, rowIdx) => {
-          return (
-            <div key={rowIdx} className="">
-              {row.map((node, nodeIdx) => {
-                const { row, col, isHarry, isCup, isWall } = node;
-                return (
-                  <Node
-                    key={nodeIdx}
-                    col={col}
-                    row={row}
-                    isHarry={isHarry}
-                    isCup={isCup}
-                    isWall={isWall}
-                  ></Node>
-                );
-              })}
-            </div>
-          );
-        })}
-      </div>
+      ) : (
+        <div className="parent">
+          <div
+            className=""
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              paddingBottom: "1rem",
+            }}
+          >
+            <button
+              onClick={() => visualizeDijkstra()}
+              style={{ marginRight: "10px" }}
+            >
+              Dijkstra's
+            </button>
+            <button
+              onClick={() => visualizeDijkstra()}
+              style={{ marginRight: "10px" }}
+            >
+              A*
+            </button>
+            <button
+              onClick={() => visualizeBFS()}
+              style={{ marginRight: "10px" }}
+            >
+              BFS
+            </button>
+            <button
+              onClick={() => visualizeDFS()}
+              style={{ marginRight: "10px" }}
+            >
+              DFS
+            </button>
+            <button onClick={() => visualizeMaze()}>Maze</button>
+            {/* CountDown Button */}
+            <Countdown />
+            {/* CountDown Button */}
+          </div>
+
+          <div className="grid">
+            {grid.map((row, rowIdx) => {
+              return (
+                <div key={rowIdx} className="">
+                  {row.map((node, nodeIdx) => {
+                    const { row, col, isHarry, isCup, isWall } = node;
+                    return (
+                      <Node
+                        key={nodeIdx}
+                        col={col}
+                        row={row}
+                        isHarry={isHarry}
+                        isCup={isCup}
+                        isWall={isWall}
+                      ></Node>
+                    );
+                  })}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+      ;
     </>
   );
 };

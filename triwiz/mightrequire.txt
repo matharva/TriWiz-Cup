@@ -1,0 +1,29 @@
+// Double dijstra
+// const startNode = maze[START_NODE_ROW][START_NODE_COL];
+      // const finishNode = maze[FINISH_NODE_ROW][FINISH_NODE_COL];
+      // const vnio = dijkstra(maze, startNode, finishNode);
+      // const nispo = getNodesInShortestPathOrder(finishNode);
+
+      // maze[nispo[nispo.length - 1].row][
+      //   nispo[nispo.length - 1].col
+      // ].isWall = true;
+      // console.log(
+      //   maze[nispo[nispo.length - 1].row][nispo[nispo.length - 1].col]
+      // );
+      // const vnio1 = dijkstra(maze, startNode, finishNode);
+      // const nispo1 = getNodesInShortestPathOrder(finishNode);
+      // console.log("Outside if condition");
+      // if (
+      //   (nispo1.length > 1 && nispo1[nispo1.length] !== finishNode) ||
+      //   nispo1.length <= 1
+      // ) {
+      //   console.log("In if condition");
+      //   maze[nispo[nispo.length - 1].row][
+      //     nispo[nispo.length - 1].col
+      //   ].isWall = false;
+      //   // wallsToAnimate.push(maze[nispo[1].row][nispo[1].col]);
+      //   // console.log(wallsToAnimate);
+      // } else {
+      //   console.log("Cheems bhaiya op");
+      // }
+      // Clear maze
