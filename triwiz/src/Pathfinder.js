@@ -7,11 +7,8 @@ import {
   getAllNodes,
 } from "./algorithms/dijkstra";
 import { BFS, getNodesInShortestPathOrderBFS } from "./algorithms/bfs";
-import {
-  DFS,
-  DFS_controller,
-  getNodesInShortestPathOrderDFS,
-} from "./algorithms/dfs";
+import { DFS, getNodesInShortestPathOrderDFS } from "./algorithms/dfs";
+import { Astar } from "./algorithms/astar";
 // import { recursiveDivisionMaze, wallsToAnimate } from "./maze/maze";
 import Countdown from "./Countdown";
 
@@ -38,6 +35,22 @@ const Pathfinder = () => {
   const [endGame, setEndGame] = useState(false);
 
   const [seconds, setSeconds] = useState(1);
+
+  function disableThisDij() {
+    let btn = document.getElementsByClassName("periculum");
+    console.log(btn[0].classList.add("disable"));
+    // btn.classList.add("disabled");
+  }
+  function disableThisDFS() {
+    let btn = document.getElementsByClassName("vermilious");
+    console.log(btn[0].classList.add("disable"));
+    // btn.classList.add("disabled");
+  }
+  function disableThisBFS() {
+    let btn = document.getElementsByClassName("bfs");
+    console.log(btn[0].classList.add("disable"));
+    // btn.classList.add("disabled");
+  }
 
   function recursiveDivisionMaze(
     board,
@@ -449,6 +462,118 @@ const Pathfinder = () => {
     }
   }
 
+  function animateBFS(visitedNodesInOrder, nodesInShortestPathOrder) {
+    let animTime = 3;
+    for (let i = 0; i <= visitedNodesInOrder.length; i++) {
+      if (i === visitedNodesInOrder.length) {
+        setTimeout(() => {
+          // console.log(i, visitedNodesInOrder.length);
+          // console.log("now starting shortest path");
+          animateShortestPath(nodesInShortestPathOrder);
+          // For fading walls
+          for (let i = 0; i <= visitedNodesInOrder.length - 1; i++) {
+            // if (i === visitedNodesInOrder.length) {
+            //   setTimeout(() => {
+            //     // console.log(i, visitedNodesInOrder.length);
+            //     // console.log("now starting shortest path");
+            //     animateShortestPath(nodesInShortestPathOrder);
+            //   }, 15 * i);
+            //   return;
+            // }
+            setTimeout(() => {
+              const node = visitedNodesInOrder[i];
+              // console.log(node);
+              if (node.isHarry) {
+                document.getElementById(
+                  `node-${node.row}-${node.col}`
+                ).className = "node node-start";
+              } else if (node.isCup) {
+                document.getElementById(
+                  `node-${node.row}-${node.col}`
+                ).className = "node node-finish ";
+              } else if (node.isVisited) {
+                document.getElementById(
+                  `node-${node.row}-${node.col}`
+                ).className = "node ";
+              }
+            }, animTime * i);
+          }
+        }, animTime * i);
+        return;
+      }
+      setTimeout(() => {
+        const node = visitedNodesInOrder[i];
+        // console.log(node);
+        if (node.isHarry) {
+          document.getElementById(`node-${node.row}-${node.col}`).className =
+            "node node-start node-visited-bfs";
+        } else if (node.isCup) {
+          document.getElementById(`node-${node.row}-${node.col}`).className =
+            "node node-finish node-visited-bfs";
+        } else {
+          document.getElementById(`node-${node.row}-${node.col}`).className =
+            "node node-visited-bfs";
+        }
+      }, animTime * i);
+    }
+  }
+
+  function animateDFS(visitedNodesInOrder, nodesInShortestPathOrder) {
+    let animTime = 7;
+    for (let i = 0; i <= visitedNodesInOrder.length; i++) {
+      if (i === visitedNodesInOrder.length) {
+        setTimeout(() => {
+          // console.log(i, visitedNodesInOrder.length);
+          // console.log("now starting shortest path");
+          animateShortestPath(nodesInShortestPathOrder);
+          // For fading walls
+          for (let i = 0; i <= visitedNodesInOrder.length - 1; i++) {
+            // if (i === visitedNodesInOrder.length) {
+            //   setTimeout(() => {
+            //     // console.log(i, visitedNodesInOrder.length);
+            //     // console.log("now starting shortest path");
+            //     animateShortestPath(nodesInShortestPathOrder);
+            //   }, 15 * i);
+            //   return;
+            // }
+            setTimeout(() => {
+              const node = visitedNodesInOrder[i];
+              // console.log(node);
+              if (node.isHarry) {
+                document.getElementById(
+                  `node-${node.row}-${node.col}`
+                ).className = "node node-start";
+              } else if (node.isCup) {
+                document.getElementById(
+                  `node-${node.row}-${node.col}`
+                ).className = "node node-finish ";
+              } else if (node.isVisited) {
+                document.getElementById(
+                  `node-${node.row}-${node.col}`
+                ).className = "node ";
+              }
+            }, (animTime + 3) * i);
+          }
+        }, animTime * i);
+        return;
+      }
+      setTimeout(() => {
+        const node = visitedNodesInOrder[i];
+        // console.log(node);
+        if (node.isHarry) {
+          document.getElementById(`node-${node.row}-${node.col}`).className =
+            "node node-start node-visited-dfs";
+        } else if (node.isCup) {
+          document.getElementById(`node-${node.row}-${node.col}`).className =
+            "node node-finish node-visited-dfs";
+        } else {
+          document.getElementById(`node-${node.row}-${node.col}`).className =
+            "node node-visited-dfs";
+        }
+      }, animTime * i);
+    }
+  }
+
   function animateShortestPath(nodesInShortestPathOrder) {
     for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
       setTimeout(() => {
@@ -480,7 +605,7 @@ const Pathfinder = () => {
           // expected output: ReferenceError: nonExistentFunction is not defined
           // Note - error messages will vary depending on browser
         }
-      }, 1 * i);
+      }, 5 * i);
     }
   }
 
@@ -498,15 +623,37 @@ const Pathfinder = () => {
     const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
     const visitedNodesInOrder = BFS(grid, startNode, finishNode);
     const nodesInShortestPathOrder = getNodesInShortestPathOrderBFS(finishNode);
+    animateBFS(visitedNodesInOrder, nodesInShortestPathOrder);
+  }
+
+  function visualizeAstar() {
+    const startNode = grid[START_NODE_ROW][START_NODE_COL];
+    const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
+    const allPossibleNodes = getAllNodes(grid);
+    let nonWallNodes = [];
+    allPossibleNodes.forEach((node) => {
+      if (!wallsToAnimate.includes(node)) {
+        nonWallNodes.push(node);
+      }
+    });
+    console.log(nonWallNodes);
+    const visitedNodesInOrder = Astar(
+      nonWallNodes,
+      grid,
+      startNode,
+      finishNode
+    );
+    // console.log(visitedNodesInOrder);
+    const nodesInShortestPathOrder = getNodesInShortestPathOrderDFS(finishNode);
     animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder);
   }
   function visualizeDFS() {
     const startNode = grid[START_NODE_ROW][START_NODE_COL];
     const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
-    const visitedNodesInOrder = DFS_controller(grid, startNode, finishNode);
-    console.log(visitedNodesInOrder);
+    const visitedNodesInOrder = DFS(grid, startNode, finishNode);
+    // console.log(visitedNodesInOrder);
     const nodesInShortestPathOrder = getNodesInShortestPathOrderDFS(finishNode);
-    animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder);
+    animateDFS(visitedNodesInOrder, nodesInShortestPathOrder);
   }
 
   function visualizeMaze() {
@@ -638,30 +785,47 @@ const Pathfinder = () => {
             }}
           >
             <button
-              onClick={() => visualizeDijkstra()}
+              onClick={() => {
+                visualizeDijkstra();
+                disableThisDij();
+              }}
+              className="periculum"
               style={{ marginRight: "10px" }}
             >
-              Dijkstra's
+              Dijkstra
             </button>
+
             <button
-              onClick={() => visualizeDijkstra()}
-              style={{ marginRight: "10px" }}
-            >
-              A*
-            </button>
-            <button
-              onClick={() => visualizeBFS()}
+              onClick={() => {
+                visualizeBFS();
+                disableThisBFS();
+              }}
+              className="bfs"
               style={{ marginRight: "10px" }}
             >
               BFS
             </button>
             <button
-              onClick={() => visualizeDFS()}
+              onClick={() => {
+                visualizeDFS();
+                disableThisDFS();
+              }}
+              className="vermilious"
               style={{ marginRight: "10px" }}
             >
               DFS
             </button>
-            <button onClick={() => visualizeMaze()}>Maze</button>
+            {/* <button
+              onClick={() => visualizeAstar()}
+              className="vermilious"
+              style={{ marginRight: "10px" }}
+            >
+              A star
+            </button> */}
+
+            <button onClick={() => visualizeMaze()} className="maze">
+              Maze
+            </button>
             {/* CountDown Button */}
             <Countdown />
             {/* CountDown Button */}
@@ -690,7 +854,6 @@ const Pathfinder = () => {
           </div>
         </div>
       )}
-      ;
     </>
   );
 };

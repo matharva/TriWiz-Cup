@@ -89,7 +89,7 @@ function getNeighbors(currentNode, grid) {
   return neighbors;
 }
 
-export function getNodesInShortestPathOrderDFS(finishNode) {
+export function getNodesInShortestPathOrderBFS(finishNode) {
   const nodesInShortestPathOrder = [];
   let currentNode = finishNode;
   while (currentNode !== null) {

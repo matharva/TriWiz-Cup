@@ -1,13 +1,98 @@
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+.periculum {
+  margin-right: 20px;
+  background-color: white;
+  padding: 5px;
+  margin: 0;
+  border: 1px solid black;
+}
+
+.periculum:hover {
+  margin-right: 15px;
+  background-image: linear-gradient(
+    rgba(0, 0, 66, 0.75),
+    rgba(0, 190, 218, 0.75)
+  );
+  color: white;
+  padding: 5px;
+  margin: 0;
+  border: 1px solid black;
+  transition: 0.4s;
+  transform: scale(1.1);
+}
+
+.vermilious {
+  margin-right: 20px;
+  background-color: white;
+  padding: 5px;
+  margin: 0;
+  border: 1px solid black;
+}
+
+.vermilious:hover {
+  margin-right: 15px;
+  background-image: linear-gradient(
+    rgba(228, 3, 3, 0.75),
+    rgba(255, 95, 31, 0.76)
+  );
+  color: white;
+  padding: 5px;
+  margin: 0;
+  border: 1px solid black;
+  transition: 0.3s;
+  transform: scale(1.1);
+}
+.bfs {
+  margin-right: 20px;
+  background-color: white;
+  padding: 5px;
+  margin: 0;
+  border: 1px solid black;
+}
+
+.bfs:hover {
+  margin-right: 15px;
+  background-image: linear-gradient(rgba(0, 133, 22, 0.75), rgb(160, 255, 82));
+  color: white;
+  padding: 5px;
+  margin: 0;
+  border: 1px solid black;
+  transition: 0.3s;
+  transform: scale(1.1);
+}
+.maze {
+  margin-right: 20px;
+  background-color: white;
+  padding: 5px;
+  margin: 0;
+  border: 1px solid black;
+}
+
+.maze:hover {
+  margin-right: 15px;
+  /* background-image: linear-gradient(black); */
+  background-color: black;
+  color: white;
+  padding: 5px;
+  margin: 0;
+  border: 1px solid black;
+  transition: 0.3s;
+  transform: scale(1.1);
+}
+
+.disable {
+  display: none;
 }
